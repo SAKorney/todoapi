@@ -6,11 +6,11 @@ namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    Task<IEnumerable<TodoResponseDto>> GetAll(CancellationToken cancellationToken);
-    Task<TodoResponseDto?> GetById(Guid id, CancellationToken cancellationToken);
-    Task<TodoResponseDto> Create(CreateTodoDto item, CancellationToken cancellationToken);
-    Task<bool> Update(Guid id, UpdateTodoDto item, CancellationToken cancellationToken);
-    Task<bool> Delete(Guid id, CancellationToken cancellationToken);
+    Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken);
+    Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken);
+    Task<bool> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
 public class TodoService : ITodoService
@@ -22,15 +22,15 @@ public class TodoService : ITodoService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<TodoResponseDto>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var todos = await _repository.GetAll(cancellationToken);
+        var todos = await _repository.GetAllAsync(cancellationToken);
         return todos.Select(x => new TodoResponseDto(x.Id, x.Title, x.IsCompleted, x.CreatedAt));
     }
 
-    public async Task<TodoResponseDto?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var todo = await _repository.GetById(id, cancellationToken);
+        var todo = await _repository.GetByIdAsync(id, cancellationToken);
         if (todo is null)
         {
             return null;
@@ -39,7 +39,7 @@ public class TodoService : ITodoService
         return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
-    public async Task<TodoResponseDto> Create(CreateTodoDto item, CancellationToken cancellationToken)
+    public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
         var todo = new TodoItem
         {
@@ -49,18 +49,18 @@ public class TodoService : ITodoService
             CreatedAt = DateTime.UtcNow
         };
 
-        await _repository.Add(todo, cancellationToken);
+        await _repository.AddAsync(todo, cancellationToken);
 
         return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
-    public async Task<bool> Update(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
     {
-        return await _repository.Update(id, item.Title, item.IsCompleted, cancellationToken);
+        return await _repository.UpdateAsync(id, item.Title, item.IsCompleted, cancellationToken);
     }
 
-    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await _repository.Delete(id, cancellationToken);
+        return await _repository.DeleteAsync(id, cancellationToken);
     }
 }

@@ -1,20 +1,20 @@
 @TodoApi_HostAddress = http://localhost:5007
 
 ### Get all todos
-GET {{TodoApi_HostAddress}}/api/v2/TodosAsync
+GET {{TodoApi_HostAddress}}z  
 Accept: application/json
 
 ###
 
 ### Get todo by id
 @todoId = 00000000-0000-0000-0000-000000000001
-GET {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
+GET {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
 Accept: application/json
 
 ###
 
 ### Create todo
-POST {{TodoApi_HostAddress}}/api/v2/TodosAsync
+POST {{TodoApi_HostAddress}}/api/v2/Todos
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 ###
 
 ### Update todo
-PUT {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
+PUT {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
 Content-Type: application/json
 
 {
@@ -35,6 +35,6 @@ Content-Type: application/json
 ###
 
 ### Delete todo
-DELETE {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
+DELETE {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
 
 ###

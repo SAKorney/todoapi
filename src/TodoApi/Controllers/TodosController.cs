@@ -7,21 +7,21 @@ namespace TodoApi
 {
     [Route("api/v2/[controller]")]
     [ApiController]
-    public class TodosAsyncController(ITodoService service) : ControllerBase
+    public class TodosController(ITodoService service) : ControllerBase
     {
         private readonly ITodoService _service = service;
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var response = await _service.GetAll(cancellationToken);
+            var response = await _service.GetAllAsync(cancellationToken);
             return Ok(response);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoResponseDto>> GetById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult<TodoResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var item = await _service.GetById(id, cancellationToken);
+            var item = await _service.GetByIdAsync(id, cancellationToken);
             if (item is null)
             {
                 return NotFound();
@@ -30,23 +30,23 @@ namespace TodoApi
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateTodoDto item, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
         {
-            var todo = await _service.Create(item, cancellationToken);
+            var todo = await _service.CreateAsync(item, cancellationToken);
 
-            return CreatedAtAction(nameof(GetById), new { id = todo.Id }, todo);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = todo.Id }, todo);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
         {
-            var existingTodo = await _service.GetById(id, cancellationToken);
+            var existingTodo = await _service.GetByIdAsync(id, cancellationToken);
             if (existingTodo is null)
             {
                 return NotFound();
             }
 
-            var updated = await _service.Update(id, item, cancellationToken);
+            var updated = await _service.UpdateAsync(id, item, cancellationToken);
 
             if (!updated)
             {
@@ -57,9 +57,9 @@ namespace TodoApi
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            var deleted = await _service.Delete(id, cancellationToken);
+            var deleted = await _service.DeleteAsync(id, cancellationToken);
             if (deleted)
             {
                 return NoContent();

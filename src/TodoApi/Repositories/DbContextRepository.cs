@@ -12,13 +12,13 @@ public class DbContextRepository : ITodoRepository
         _context = context;
     }
 
-    public async Task Add(TodoItem item, CancellationToken cancellationToken)
+    public async Task AddAsync(TodoItem item, CancellationToken cancellationToken)
     {
         await _context.Items.AddAsync(item, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         var item = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
 
@@ -32,21 +32,21 @@ public class DbContextRepository : ITodoRepository
         return true;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAll(CancellationToken cancellationToken)
+    public async Task<IEnumerable<TodoItem>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _context.Items
             .AsNoTracking()
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<TodoItem?> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<TodoItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Items
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<bool> Update(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
     {
         var existing = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
         if (existing is null)
