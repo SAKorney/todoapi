@@ -3,19 +3,20 @@ using Microsoft.AspNetCore.Mvc;
 using TodoApi.Domain;
 using TodoApi.DTOs;
 using TodoApi.Repositories;
+using TodoApi.Services;
 
 namespace TodoApi
 {
     [Route("api/v2/[controller]")]
     [ApiController]
-    public class TodosAsyncController(ITodoRepository repository) : ControllerBase
+    public class TodosAsyncController(ITodoService service) : ControllerBase
     {
-        private readonly ITodoRepository _repository = repository;
+        private readonly ITodoService _service = service;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAll()
         {
-            var items = await _repository.GetAll();
+            var items = await _service.GetAll();
             var response = items.Select(x => new TodoResponseDto(x.Id, x.Title, x.IsCompleted, x.CreatedAt));
             return Ok(response);
         }
@@ -23,7 +24,7 @@ namespace TodoApi
         [HttpGet("{id}")]
         public async Task<ActionResult<TodoResponseDto>> GetById(Guid id)
         {
-            var item = await _repository.GetById(id);
+            var item = await _service.GetById(id);
             if (item is null)
             {
                 return NotFound();
@@ -43,7 +44,7 @@ namespace TodoApi
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _repository.Add(todo);
+            await _service.Create(todo.Title);
 
             var response = new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
 
@@ -53,7 +54,7 @@ namespace TodoApi
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpdateTodoDto item)
         {
-            var existingTodo = await _repository.GetById(id);
+            var existingTodo = await _service.GetById(id);
             if (existingTodo is null)
             {
                 return NotFound();
@@ -62,7 +63,7 @@ namespace TodoApi
             existingTodo.Title = item.Title;
             existingTodo.IsCompleted = item.IsCompleted;
 
-            var updated = await _repository.Update(existingTodo);
+            var updated = await _service.Update(existingTodo.Id, existingTodo.Title, existingTodo.IsCompleted);
 
             if (!updated)
             {
@@ -75,13 +76,12 @@ namespace TodoApi
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var deleted = await _repository.Delete(id);
+            var deleted = await _service.Delete(id);
             if (deleted)
             {
                 return NoContent();
             }
             return NotFound();
         }
-
     }
 }

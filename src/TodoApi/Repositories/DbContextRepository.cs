@@ -44,13 +44,16 @@ public class DbContextRepository : ITodoRepository
 
     public async Task<bool> Update(TodoItem item)
     {
-        var entry = _context.Entry(item);
-        if (!entry.Properties.Any(p => p.IsModified))
+        var existing = await _context.Items.FindAsync(item.Id);
+        if (existing is null)
         {
             return false;
         }
-        
-        var res = await _context.SaveChangesAsync();
-        return res > 0;
+
+        existing.Title = item.Title;
+        existing.IsCompleted = item.IsCompleted;
+
+        var updatedRows = await _context.SaveChangesAsync();
+        return updatedRows > 0;
     }
 }
