@@ -16,8 +16,7 @@ namespace TodoApi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAll()
         {
-            var items = await _service.GetAll();
-            var response = items.Select(x => new TodoResponseDto(x.Id, x.Title, x.IsCompleted, x.CreatedAt));
+            var response = await _service.GetAll();
             return Ok(response);
         }
 
@@ -29,18 +28,15 @@ namespace TodoApi
             {
                 return NotFound();
             }
-            var response = new TodoResponseDto(item.Id, item.Title, item.IsCompleted, item.CreatedAt);
-            return Ok(response);
+            return Ok(item);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(CreateTodoDto item)
         {
-            var todo = await _service.Create(item.Title);
+            var todo = await _service.Create(item);
 
-            var response = new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
-
-            return CreatedAtAction(nameof(GetById), new { id = todo.Id }, response);
+            return CreatedAtAction(nameof(GetById), new { id = todo.Id }, todo);
         }
 
         [HttpPut("{id}")]
@@ -52,7 +48,7 @@ namespace TodoApi
                 return NotFound();
             }
 
-            var updated = await _service.Update(id, item.Title, item.IsCompleted);
+            var updated = await _service.Update(id, item);
 
             if (!updated)
             {

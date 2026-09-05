@@ -1,14 +1,15 @@
 using TodoApi.Domain;
+using TodoApi.DTOs;
 using TodoApi.Repositories;
 
 namespace TodoApi.Services;
 
 public interface ITodoService
 {
-    Task<IEnumerable<TodoItem>> GetAll();
-    Task<TodoItem?> GetById(Guid id);
-    Task<TodoItem> Create(string title);
-    Task<bool> Update(Guid id, string title, bool isCompleted);
+    Task<IEnumerable<TodoResponseDto>> GetAll();
+    Task<TodoResponseDto?> GetById(Guid id);
+    Task<TodoResponseDto> Create(CreateTodoDto item);
+    Task<bool> Update(Guid id, UpdateTodoDto item);
     Task<bool> Delete(Guid id);
 }
 
@@ -21,33 +22,41 @@ public class TodoService : ITodoService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAll()
+    public async Task<IEnumerable<TodoResponseDto>> GetAll()
     {
-        return await _repository.GetAll();
+        var todos = await _repository.GetAll();
+        return todos.Select(x => new TodoResponseDto(x.Id, x.Title, x.IsCompleted, x.CreatedAt));
     }
 
-    public async Task<TodoItem?> GetById(Guid id)
+    public async Task<TodoResponseDto?> GetById(Guid id)
     {
-        return await _repository.GetById(id);
+        var todo = await _repository.GetById(id);
+        if (todo is null)
+        {
+            return null;
+        }
+
+        return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
-    public async Task<TodoItem> Create(string title)
+    public async Task<TodoResponseDto> Create(CreateTodoDto item)
     {
         var todo = new TodoItem
         {
             Id = Guid.NewGuid(),
-            Title = title,
+            Title = item.Title,
             IsCompleted = false,
             CreatedAt = DateTime.UtcNow
         };
 
         await _repository.Add(todo);
-        return todo;
+
+        return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
-    public async Task<bool> Update(Guid id, string title, bool isCompleted)
+    public async Task<bool> Update(Guid id, UpdateTodoDto item)
     {
-        return await _repository.Update(id, title, isCompleted);
+        return await _repository.Update(id, item.Title, item.IsCompleted);
     }
 
     public async Task<bool> Delete(Guid id)
