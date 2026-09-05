@@ -42,16 +42,16 @@ public class DbContextRepository : ITodoRepository
         return await _context.Items.FindAsync(id);
     }
 
-    public async Task<bool> Update(TodoItem item)
+    public async Task<bool> Update(Guid id, string title, bool isCompleted)
     {
-        var existing = await _context.Items.FindAsync(item.Id);
+        var existing = await _context.Items.FindAsync(id);
         if (existing is null)
         {
             return false;
         }
 
-        existing.Title = item.Title;
-        existing.IsCompleted = item.IsCompleted;
+        existing.Title = title;
+        existing.IsCompleted = isCompleted;
 
         var updatedRows = await _context.SaveChangesAsync();
         return updatedRows > 0;

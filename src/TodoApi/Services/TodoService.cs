@@ -47,12 +47,7 @@ public class TodoService : ITodoService
 
     public async Task<bool> Update(Guid id, string title, bool isCompleted)
     {
-        return await _repository.Update(new TodoItem
-        {
-            Id = id,
-            Title = title,
-            IsCompleted = isCompleted
-        });
+        return await _repository.Update(id, title, isCompleted);
     }
 
     public async Task<bool> Delete(Guid id)

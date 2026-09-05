@@ -36,15 +36,7 @@ namespace TodoApi
         [HttpPost]
         public async Task<IActionResult> Create(CreateTodoDto item)
         {
-            var todo = new TodoItem()
-            {
-                Id = Guid.NewGuid(),
-                Title = item.Title,
-                IsCompleted = false,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            await _service.Create(todo.Title);
+            var todo = await _service.Create(item.Title);
 
             var response = new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
 
@@ -60,10 +52,7 @@ namespace TodoApi
                 return NotFound();
             }
 
-            existingTodo.Title = item.Title;
-            existingTodo.IsCompleted = item.IsCompleted;
-
-            var updated = await _service.Update(existingTodo.Id, existingTodo.Title, existingTodo.IsCompleted);
+            var updated = await _service.Update(id, item.Title, item.IsCompleted);
 
             if (!updated)
             {
