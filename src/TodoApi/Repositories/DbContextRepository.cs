@@ -39,7 +39,9 @@ public class DbContextRepository : ITodoRepository
 
     public async Task<TodoItem?> GetById(Guid id)
     {
-        return await _context.Items.FindAsync(id);
+        return await _context.Items
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<bool> Update(Guid id, string title, bool isCompleted)
