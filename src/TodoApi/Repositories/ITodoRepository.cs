@@ -4,9 +4,9 @@ namespace TodoApi.Repositories;
 
 public interface ITodoRepository
 {
-    IEnumerable<TodoItem> GetAll();
-    TodoItem? GetById(Guid id);
-    void Add(TodoItem item);
-    bool Update(TodoItem item);
-    bool Delete(Guid id);
+    Task<IEnumerable<TodoItem>> GetAllAsync(CancellationToken cancellationToken);
+    Task<TodoItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task AddAsync(TodoItem item, CancellationToken cancellationToken);
+    Task<TodoItem?> UpdateAsync(Guid id, string title, bool isCompleted, CancellationToken cancellationToken);
+    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
