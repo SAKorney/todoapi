@@ -48,7 +48,7 @@ public class DbContextRepository : ITodoRepository
 
     public async Task<TodoItem?> UpdateAsync(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
     {
-        var existing = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
+        var existing = await _context.Items.FindAsync([id], cancellationToken);
         if (existing is null)
         {
             return null;
