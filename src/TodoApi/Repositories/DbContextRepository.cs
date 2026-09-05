@@ -12,15 +12,15 @@ public class DbContextRepository : ITodoRepository
         _context = context;
     }
 
-    public async Task Add(TodoItem item)
+    public async Task Add(TodoItem item, CancellationToken cancellationToken)
     {
-        await _context.Items.AddAsync(item);
-        await _context.SaveChangesAsync();
+        await _context.Items.AddAsync(item, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<bool> Delete(Guid id)
+    public async Task<bool> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var item = await _context.Items.FindAsync(id);
+        var item = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
 
         if (item is null)
         {
@@ -28,25 +28,27 @@ public class DbContextRepository : ITodoRepository
         }
 
         _context.Items.Remove(item);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(cancellationToken);
         return true;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAll()
-    {
-        return await _context.Items.AsNoTracking().ToListAsync();
-    }
-
-    public async Task<TodoItem?> GetById(Guid id)
+    public async Task<IEnumerable<TodoItem>> GetAll(CancellationToken cancellationToken)
     {
         return await _context.Items
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == id);
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> Update(Guid id, string title, bool isCompleted)
+    public async Task<TodoItem?> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var existing = await _context.Items.FindAsync(id);
+        return await _context.Items
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> Update(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
+    {
+        var existing = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
         if (existing is null)
         {
             return false;
@@ -55,7 +57,7 @@ public class DbContextRepository : ITodoRepository
         existing.Title = title;
         existing.IsCompleted = isCompleted;
 
-        var updatedRows = await _context.SaveChangesAsync();
+        var updatedRows = await _context.SaveChangesAsync(cancellationToken);
         return updatedRows > 0;
     }
 }
