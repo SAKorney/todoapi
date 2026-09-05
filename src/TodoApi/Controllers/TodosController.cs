@@ -8,18 +8,14 @@ namespace TodoApi
 {
     [Route("api/v2/[controller]")]
     [ApiController]
-    public class TodosAsyncController(ITodoRepositoryAsync repository) : ControllerBase
+    public class TodosAsyncController(ITodoRepository repository) : ControllerBase
     {
-        private readonly ITodoRepositoryAsync _repository = repository;
+        private readonly ITodoRepository _repository = repository;
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAll()
         {
             var items = await _repository.GetAll();
-            if (items is null)
-            {
-                return NotFound();
-            }
             var response = items.Select(x => new TodoResponseDto(x.Id, x.Title, x.IsCompleted, x.CreatedAt));
             return Ok(response);
         }

@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using TodoApi.Domain;
 using TodoApi.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // DI
-builder.Services.AddSingleton<ITodoRepository, InMemoryTodoRepository>();
-builder.Services.AddScoped<ITodoRepositoryAsync, DbContextRepository>();
+builder.Services.AddScoped<ITodoRepository, DbContextRepository>();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -30,5 +30,23 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
+    if (!await context.Items.AnyAsync())
+    {
+        var now = DateTime.UtcNow;
+        var todos = Enumerable.Range(1, 10).Select(x => new TodoItem
+        {
+            Id = Guid.NewGuid(),
+            IsCompleted = x % 2 == 0,
+            CreatedAt = now.AddDays(-x),
+            Title = $"Title {x}"
+        });
+        context.Items.AddRange(todos);
+        await context.SaveChangesAsync();
+    }
+}
 
 app.Run();

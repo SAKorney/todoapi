@@ -3,7 +3,7 @@ using TodoApi.Domain;
 
 namespace TodoApi.Repositories;
 
-public class DbContextRepository : ITodoRepositoryAsync
+public class DbContextRepository : ITodoRepository
 {
     private readonly TodoContext _context;
 
@@ -15,6 +15,7 @@ public class DbContextRepository : ITodoRepositoryAsync
     public async Task Add(TodoItem item)
     {
         await _context.Items.AddAsync(item);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<bool> Delete(Guid id)
@@ -27,6 +28,7 @@ public class DbContextRepository : ITodoRepositoryAsync
         }
 
         _context.Items.Remove(item);
+        await _context.SaveChangesAsync();
         return true;
     }
 
@@ -42,13 +44,12 @@ public class DbContextRepository : ITodoRepositoryAsync
 
     public async Task<bool> Update(TodoItem item)
     {
-        _context.Items.Update(item);
-
-        if (!_context.ChangeTracker.HasChanges())
+        var entry = _context.Entry(item);
+        if (!entry.Properties.Any(p => p.IsModified))
         {
             return false;
         }
-
+        
         var res = await _context.SaveChangesAsync();
         return res > 0;
     }

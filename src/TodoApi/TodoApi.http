@@ -1,6 +1,40 @@
 @TodoApi_HostAddress = http://localhost:5007
 
-GET {{TodoApi_HostAddress}}/weatherforecast/
+### Get all todos
+GET {{TodoApi_HostAddress}}/api/v2/TodosAsync
 Accept: application/json
+
+###
+
+### Get todo by id
+@todoId = 00000000-0000-0000-0000-000000000001
+GET {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
+Accept: application/json
+
+###
+
+### Create todo
+POST {{TodoApi_HostAddress}}/api/v2/TodosAsync
+Content-Type: application/json
+
+{
+  "title": "New todo item"
+}
+
+###
+
+### Update todo
+PUT {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
+Content-Type: application/json
+
+{
+  "title": "Updated todo item",
+  "isCompleted": true
+}
+
+###
+
+### Delete todo
+DELETE {{TodoApi_HostAddress}}/api/v2/TodosAsync/{{todoId}}
 
 ###
