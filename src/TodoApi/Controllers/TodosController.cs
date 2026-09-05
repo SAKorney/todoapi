@@ -38,22 +38,15 @@ namespace TodoApi
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
+        public async Task<ActionResult<TodoResponseDto>> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
         {
-            var existingTodo = await _service.GetByIdAsync(id, cancellationToken);
-            if (existingTodo is null)
+            var updated = await _service.UpdateAsync(id, item, cancellationToken);
+            if (updated is null)
             {
                 return NotFound();
             }
 
-            var updated = await _service.UpdateAsync(id, item, cancellationToken);
-
-            if (!updated)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Ошибка сохранения данных");
-            }
-
-            return NoContent();
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]

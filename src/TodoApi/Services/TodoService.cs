@@ -9,7 +9,7 @@ public interface ITodoService
     Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken);
     Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken);
-    Task<bool> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken);
+    Task<TodoResponseDto?> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken);
     Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
 }
 
@@ -54,9 +54,15 @@ public class TodoService : ITodoService
         return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
+    public async Task<TodoResponseDto?> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
     {
-        return await _repository.UpdateAsync(id, item.Title, item.IsCompleted, cancellationToken);
+        var todo = await _repository.UpdateAsync(id, item.Title, item.IsCompleted, cancellationToken);
+        if (todo is null)
+        {
+            return null;
+        }
+
+        return new TodoResponseDto(todo.Id, todo.Title, todo.IsCompleted, todo.CreatedAt);
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)

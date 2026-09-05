@@ -46,18 +46,18 @@ public class DbContextRepository : ITodoRepository
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
-    public async Task<bool> UpdateAsync(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
+    public async Task<TodoItem?> UpdateAsync(Guid id, string title, bool isCompleted, CancellationToken cancellationToken)
     {
         var existing = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
         if (existing is null)
         {
-            return false;
+            return null;
         }
 
         existing.Title = title;
         existing.IsCompleted = isCompleted;
 
-        var updatedRows = await _context.SaveChangesAsync(cancellationToken);
-        return updatedRows > 0;
+        await _context.SaveChangesAsync(cancellationToken);
+        return existing;
     }
 }
