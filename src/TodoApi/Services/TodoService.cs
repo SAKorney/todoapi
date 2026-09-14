@@ -4,15 +4,6 @@ using TodoApi.Repositories;
 
 namespace TodoApi.Services;
 
-public interface ITodoService
-{
-    Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken);
-    Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken);
-    Task<TodoResponseDto?> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken);
-    Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
-}
-
 public class TodoService : ITodoService
 {
     private readonly ITodoRepository _repository;
