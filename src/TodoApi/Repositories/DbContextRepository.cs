@@ -20,7 +20,7 @@ public class DbContextRepository : ITodoRepository
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var item = await _context.Items.FindAsync(new object[] { id }, cancellationToken);
+        var item = await _context.Items.FindAsync([id], cancellationToken);
 
         if (item is null)
         {
