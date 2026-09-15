@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Domain;
+using TodoApi.DTOs;
 using TodoApi.Repositories;
 using TodoApi.Services;
+using TodoApi.Validator;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +12,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ITodoRepository, DbContextRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
 
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
