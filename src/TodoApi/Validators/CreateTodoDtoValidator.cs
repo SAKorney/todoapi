@@ -3,16 +3,12 @@ using TodoApi.DTOs;
 
 namespace TodoApi.Validator;
 
-public class CreateTodoDtoValidator : AbstractValidator<CreateTodoDto>
+public class CreateTodoDtoValidator : ToDoValidator<CreateTodoDto>
 {
-    private static readonly int _minLength = 2;
-    private static readonly int _maxLength = 200;
-
     public CreateTodoDtoValidator()
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required")
-            .Length(_minLength, _maxLength)
-            .WithMessage($"Title must be between {_minLength} and {_maxLength} characters");
+            .Length(MinLength, MaxLength).WithMessage(TitleLengthErrorMsg);
     }
 }
