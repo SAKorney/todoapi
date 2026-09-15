@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Domain;
+using TodoApi.DTOs;
 using TodoApi.Repositories;
 using TodoApi.Services;
 
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // DI
 builder.Services.AddScoped<ITodoRepository, DbContextRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
+
+builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 
 // Add services to the container.
 builder.Services.AddControllers();
