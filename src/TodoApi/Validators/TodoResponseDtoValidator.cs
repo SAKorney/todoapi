@@ -16,7 +16,7 @@ public class TodoResponseDtoValidator : AbstractValidator<TodoResponseDto>
 
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required")
-            .Length(_minLength, _minLength)
+            .Length(_minLength, _maxLength)
             .WithMessage($"Title must be between {_minLength} and {_maxLength} characters");
     }
 }
