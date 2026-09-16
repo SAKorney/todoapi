@@ -10,6 +10,7 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // DI
+builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ITodoRepository, DbContextRepository>();
 builder.Services.AddScoped<ITodoService, TodoService>();
 
@@ -47,13 +48,9 @@ using (var scope = app.Services.CreateScope())
     if (!await context.Items.AnyAsync())
     {
         var now = DateTime.UtcNow;
-        var todos = Enumerable.Range(1, 10).Select(x => new TodoItem
-        {
-            Id = Guid.NewGuid(),
-            IsCompleted = x % 2 == 0,
-            CreatedAt = now.AddDays(-x),
-            Title = $"Title {x}"
-        });
+        var todos = Enumerable.Range(1, 10)
+            .Select((x, v) => (x, TodoItem.Create($"Title {x}", now.AddDays(-x))))
+            .Select(t => { t.Item2.IsCompleted = t.x % 2 == 0; return t.Item2; });
         context.Items.AddRange(todos);
         await context.SaveChangesAsync();
     }
