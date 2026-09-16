@@ -3,7 +3,7 @@ using TodoApi.Domain;
 using TodoApi.DTOs;
 using TodoApi.Repositories;
 using TodoApi.Services;
-using TodoApi.Validator;
+using TodoApi.Validators;
 using FluentValidation;
 using Scalar.AspNetCore;
 
