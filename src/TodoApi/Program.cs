@@ -5,6 +5,7 @@ using TodoApi.Repositories;
 using TodoApi.Services;
 using TodoApi.Validator;
 using FluentValidation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,10 +33,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.UseSwaggerUi(options =>
-    {
-        options.DocumentPath = "/openapi/v1.json";
-    });
+    app.MapScalarApiReference();
 }
 
 //app.UseExceptionHandler();
