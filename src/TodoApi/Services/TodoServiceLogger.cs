@@ -1,9 +1,10 @@
 using TodoApi.DTOs;
-using TodoApi.Services;
+
+namespace TodoApi.Services;
 
 public class TodoServiceLogger(ITodoService todoService, ILogger<TodoServiceLogger> logger) : ITodoService
 {
-   public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
+    public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
         logger.LogInformation("Creating a new todo item: {@Item}", item);
         try
