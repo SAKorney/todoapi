@@ -12,7 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 // DI
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ITodoRepository, DbContextRepository>();
-builder.Services.AddScoped<ITodoService, TodoService>();
+builder.Services.AddScoped<ITodoService, TodoService>()
+    .Decorate<ITodoService, TodoServiceLogger>();
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
