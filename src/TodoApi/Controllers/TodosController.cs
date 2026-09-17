@@ -8,12 +8,10 @@ namespace TodoApi.Controllers;
 [ApiController]
 public class TodosController(ITodoService service) : ControllerBase
 {
-    private readonly ITodoService _service = service;
-
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAllAsync(CancellationToken cancellationToken)
     {
-        var response = await _service.GetAllAsync(cancellationToken);
+        var response = await service.GetAllAsync(cancellationToken);
         return Ok(response);
     }
 
@@ -21,7 +19,7 @@ public class TodosController(ITodoService service) : ControllerBase
     [ActionName(nameof(GetByIdAsync))] // Начиная с версии 3.0 среда выполнения по умолчанию удаляет суффикс Async из имен экшенов при генерации маршрутов
     public async Task<ActionResult<TodoResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var item = await _service.GetByIdAsync(id, cancellationToken);
+        var item = await service.GetByIdAsync(id, cancellationToken);
         if (item is null)
         {
             return NotFound();
@@ -32,7 +30,7 @@ public class TodosController(ITodoService service) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
-        var todo = await _service.CreateAsync(item, cancellationToken);
+        var todo = await service.CreateAsync(item, cancellationToken);
 
         return CreatedAtAction(nameof(GetByIdAsync), new { id = todo.Id }, todo);
     }
@@ -40,7 +38,7 @@ public class TodosController(ITodoService service) : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<TodoResponseDto>> UpdateAsync(Guid id, UpdateTodoDto item, CancellationToken cancellationToken)
     {
-        var updated = await _service.UpdateAsync(id, item, cancellationToken);
+        var updated = await service.UpdateAsync(id, item, cancellationToken);
         if (updated is null)
         {
             return NotFound();
@@ -52,7 +50,7 @@ public class TodosController(ITodoService service) : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var deleted = await _service.DeleteAsync(id, cancellationToken);
+        var deleted = await service.DeleteAsync(id, cancellationToken);
         if (deleted)
         {
             return NoContent();
