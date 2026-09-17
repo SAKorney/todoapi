@@ -3,9 +3,9 @@ using TodoApi.Domain;
 using TodoApi.DTOs;
 using TodoApi.Repositories;
 using TodoApi.Services;
-using TodoApi.Validators;
 using FluentValidation;
 using Scalar.AspNetCore;
+using TodoApi.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 

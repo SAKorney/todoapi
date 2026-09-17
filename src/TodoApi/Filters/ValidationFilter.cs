@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace TodoApi.Validators;
+namespace TodoApi.Filters;
 
 public class ValidationFilter(IServiceProvider serviceProvider) : IAsyncActionFilter
 {
