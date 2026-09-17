@@ -5,10 +5,11 @@ using TodoApi.Repositories;
 
 namespace TodoApi.Services;
 
-public class TodoService(ITodoRepository repository, IMapper mapper) : ITodoService
+public class TodoService(ITodoRepository repository, IMapper mapper, TimeProvider timeProvider) : ITodoService
 {
     private readonly ITodoRepository _repository = repository;
     private readonly IMapper _mapper = mapper;
+    private readonly TimeProvider _timeProvider = timeProvider;
 
     public async Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken)
     {
@@ -29,7 +30,7 @@ public class TodoService(ITodoRepository repository, IMapper mapper) : ITodoServ
 
     public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
-        var todo = _mapper.Map<TodoItem>(item);
+        var todo = TodoItem.Create(item.Title, _timeProvider.GetUtcNow().UtcDateTime);
         await _repository.AddAsync(todo, cancellationToken);
         return _mapper.Map<TodoResponseDto>(todo);
     }

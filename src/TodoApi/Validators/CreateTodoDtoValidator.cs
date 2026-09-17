@@ -1,7 +1,7 @@
 using FluentValidation;
 using TodoApi.DTOs;
 
-namespace TodoApi.Validator;
+namespace TodoApi.Validators;
 
 public class CreateTodoDtoValidator : ToDoValidator<CreateTodoDto>
 {

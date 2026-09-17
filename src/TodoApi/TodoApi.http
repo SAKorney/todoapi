@@ -1,7 +1,7 @@
 @TodoApi_HostAddress = http://localhost:5007
 
 ### Get all todos
-GET {{TodoApi_HostAddress}}z  
+GET {{TodoApi_HostAddress}}/api/v2/Todos
 Accept: application/json
 
 ###
