@@ -28,16 +28,6 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<LogActionFilter>();
 });
 
-if (builder.Environment.IsDevelopment())
-{
-    // Logging settings
-    builder.Services.AddHttpLogging(logging =>
-    {
-        logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPropertiesAndHeaders
-                              | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponsePropertiesAndHeaders;
-    });
-}
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -48,8 +38,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpLogging();
-
     app.UseDeveloperExceptionPage();
     app.MapOpenApi();
     app.MapScalarApiReference();
