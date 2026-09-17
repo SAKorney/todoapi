@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace TodoApi.Validators;
 
-public class ToDoValidator<T> : AbstractValidator<T>
+public class TodoValidator<T> : AbstractValidator<T>
 {
     protected int MinLength => 2;
     protected int MaxLength => 200;

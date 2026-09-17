@@ -14,16 +14,10 @@ public class DbContextRepository(TodoContext context) : ITodoRepository
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
-        var item = await context.Items.FindAsync([id], cancellationToken);
-
-        if (item is null)
-        {
-            return false;
-        }
-
-        context.Items.Remove(item);
-        await context.SaveChangesAsync(cancellationToken);
-        return true;
+        var affected = await context.Items
+            .Where(x => x.Id == id)
+            .ExecuteDeleteAsync(cancellationToken);
+        return affected > 0;
     }
 
     public async Task<IEnumerable<TodoItem>> GetAllAsync(CancellationToken cancellationToken)

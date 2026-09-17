@@ -6,8 +6,10 @@ using TodoApi.Services;
 using FluentValidation;
 using Scalar.AspNetCore;
 using TodoApi.Filters;
+using TodoApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddFlexibleLogging();
 
 // DI
 builder.Services.AddSingleton(TimeProvider.System);
@@ -28,16 +30,6 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<LogActionFilter>();
 });
 
-if (builder.Environment.IsDevelopment())
-{
-    // Logging settings
-    builder.Services.AddHttpLogging(logging =>
-    {
-        logging.LoggingFields = Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.RequestPropertiesAndHeaders
-                              | Microsoft.AspNetCore.HttpLogging.HttpLoggingFields.ResponsePropertiesAndHeaders;
-    });
-}
-
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -48,8 +40,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseHttpLogging();
-
     app.UseDeveloperExceptionPage();
     app.MapOpenApi();
     app.MapScalarApiReference();
@@ -74,4 +64,5 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.Logger.LogInformation("Application is starting, logging provider selected from configuration");
 app.Run();

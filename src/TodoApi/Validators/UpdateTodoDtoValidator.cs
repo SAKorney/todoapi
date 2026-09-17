@@ -3,7 +3,7 @@ using TodoApi.DTOs;
 
 namespace TodoApi.Validators;
 
-public class UpdateTodoDtoValidator : ToDoValidator<UpdateTodoDto>
+public class UpdateTodoDtoValidator : TodoValidator<UpdateTodoDto>
 {
     public UpdateTodoDtoValidator()
     {
