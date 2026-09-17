@@ -24,6 +24,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationFilter>();
+    options.Filters.Add<LogActionFilter>();
 });
 
 if (builder.Environment.IsDevelopment())
