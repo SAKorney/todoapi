@@ -6,8 +6,10 @@ using TodoApi.Services;
 using FluentValidation;
 using Scalar.AspNetCore;
 using TodoApi.Filters;
+using TodoApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddFlexibleLogging();
 
 // DI
 builder.Services.AddSingleton(TimeProvider.System);
@@ -62,4 +64,5 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+app.Logger.LogInformation("Application is starting, logging provider selected from configuration");
 app.Run();
