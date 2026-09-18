@@ -5,6 +5,28 @@ namespace Todo.Application.Services;
 
 public class TodoServiceLogger(ITodoService todoService, ILogger<TodoServiceLogger> logger) : ITodoService
 {
+     public async Task<PagedResult<TodoResponseDto>> GetPagedAsync(
+        TodoQueryParameters query,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Fetching paged todos: Page={Page}, PageSize={PageSize}, IsCompleted={IsCompleted}, Search={Search}, SortBy={SortBy}, SortDir={SortDir}",
+            query.Page, query.PageSize, query.IsCompleted, query.Search, query.SortBy, query.SortDir);
+        try
+        {
+            var result = await todoService.GetPagedAsync(query, cancellationToken);
+            logger.LogInformation(
+                "Successfully fetched {Count} of {TotalCount} todo items (page {Page}/{TotalPages})",
+                result.Items.Count, result.TotalCount, result.Page, result.TotalPages);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while fetching paged todo items");
+            throw;
+        }
+    }
+    
     public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
         logger.LogInformation("Creating a new todo item: {@Item}", item);
