@@ -8,18 +8,13 @@ using Xunit;
 
 namespace Todo.Tests.Integration;
 
-public class TodosControllerIntegrationTests : IClassFixture<TodoWebApplicationFactory>
+public class TodosControllerIntegrationTests(TodoWebApplicationFactory factory) : IClassFixture<TodoWebApplicationFactory>
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = factory.CreateClient();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
-
-    public TodosControllerIntegrationTests(TodoWebApplicationFactory factory)
-    {
-        _client = factory.CreateClient();
-    }
 
     #region GET list
 

@@ -34,13 +34,14 @@ public class DbContextRepository(TodoContext context) : ITodoRepository
             _ => q.OrderByDescending(x => x.CreatedAt)
         };
 
+        var page = query.NormalizedPage;
+        var pageSize = query.NormalizedPageSize;
         var items = await q
-            .Skip((query.Page - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
-        return new PagedResult<TodoItem>(items, totalCount, query.Page, query.PageSize);
+        return new PagedResult<TodoItem>(items, totalCount, page, pageSize);
     }
 
     public async Task AddAsync(TodoItem item, CancellationToken cancellationToken)
