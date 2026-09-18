@@ -1,0 +1,162 @@
+@TodoApi_HostAddress = http://localhost:5007
+@todoId = 00000000-0000-0000-0000-000000000001
+
+### ========================
+### GET — список (без параметров)
+### ========================
+GET {{TodoApi_HostAddress}}/api/v2/Todos
+Accept: application/json
+
+###
+
+### GET — пагинация
+GET {{TodoApi_HostAddress}}/api/v2/Todos?page=1&pageSize=5
+Accept: application/json
+
+###
+
+### GET — вторая страница
+GET {{TodoApi_HostAddress}}/api/v2/Todos?page=2&pageSize=5
+Accept: application/json
+
+###
+
+### GET — фильтр: только незавершённые
+GET {{TodoApi_HostAddress}}/api/v2/Todos?isCompleted=false
+Accept: application/json
+
+###
+
+### GET — фильтр: только завершённые
+GET {{TodoApi_HostAddress}}/api/v2/Todos?isCompleted=true
+Accept: application/json
+
+###
+
+### GET — поиск по Title
+GET {{TodoApi_HostAddress}}/api/v2/Todos?search=Title
+Accept: application/json
+
+###
+
+### GET — сортировка по title (asc)
+GET {{TodoApi_HostAddress}}/api/v2/Todos?sortBy=title&sortDir=asc
+Accept: application/json
+
+###
+
+### GET — сортировка по createdAt (desc)
+GET {{TodoApi_HostAddress}}/api/v2/Todos?sortBy=createdAt&sortDir=desc
+Accept: application/json
+
+###
+
+### GET — сортировка по isCompleted
+GET {{TodoApi_HostAddress}}/api/v2/Todos?sortBy=isCompleted&sortDir=asc
+Accept: application/json
+
+###
+
+### GET — комбинация: фильтр + поиск + сортировка + пагинация
+GET {{TodoApi_HostAddress}}/api/v2/Todos?page=1&pageSize=10&isCompleted=false&search=Title&sortBy=createdAt&sortDir=desc
+Accept: application/json
+
+###
+
+### ========================
+### GET — по id
+### ========================
+GET {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
+Accept: application/json
+
+###
+
+### GET — несуществующий id (ожидается 404)
+GET {{TodoApi_HostAddress}}/api/v2/Todos/11111111-1111-1111-1111-111111111111
+Accept: application/json
+
+###
+
+### ========================
+### POST — создание
+### ========================
+POST {{TodoApi_HostAddress}}/api/v2/Todos
+Content-Type: application/json
+
+{
+  "title": "New todo item"
+}
+
+###
+
+### POST — валидация: пустой title (ожидается 400)
+POST {{TodoApi_HostAddress}}/api/v2/Todos
+Content-Type: application/json
+
+{
+  "title": ""
+}
+
+###
+
+### POST — валидация: слишком короткий title (ожидается 400)
+POST {{TodoApi_HostAddress}}/api/v2/Todos
+Content-Type: application/json
+
+{
+  "title": "A"
+}
+
+###
+
+### ========================
+### PUT — обновление
+### ========================
+PUT {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
+Content-Type: application/json
+
+{
+  "title": "Updated todo item",
+  "isCompleted": true
+}
+
+###
+
+### PUT — несуществующий id (ожидается 404)
+PUT {{TodoApi_HostAddress}}/api/v2/Todos/11111111-1111-1111-1111-111111111111
+Content-Type: application/json
+
+{
+  "title": "Does not exist",
+  "isCompleted": false
+}
+
+###
+
+### PATCH — отметить как выполненное
+PATCH {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}/status
+Content-Type: application/json
+
+{
+  "isCompleted": true
+}
+
+### PATCH — снять отметку о выполнении
+PATCH .../status
+{ "isCompleted": false }
+
+### PATCH — несуществующий id (404)
+PATCH .../11111111-.../status
+{ "isCompleted": true }
+
+### ========================
+### DELETE
+### ========================
+DELETE {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}
+
+###
+
+### DELETE — несуществующий id (ожидается 404)
+DELETE {{TodoApi_HostAddress}}/api/v2/Todos/11111111-1111-1111-1111-111111111111
+
+###
