@@ -66,6 +66,21 @@ public class TodosController(ITodoService service) : ControllerBase
         return Ok(updated);
     }
 
+    [HttpPatch("{id}/status")]
+    public async Task<ActionResult<TodoResponseDto>> UpdateStatusAsync(
+        Guid id,
+        UpdateTodoStatusDto item,
+        CancellationToken cancellationToken)
+    {
+        var updated = await service.UpdateStatusAsync(id, item, cancellationToken);
+        if (updated is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(updated);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {

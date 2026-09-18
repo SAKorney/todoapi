@@ -133,6 +133,22 @@ Content-Type: application/json
 
 ###
 
+### PATCH — отметить как выполненное
+PATCH {{TodoApi_HostAddress}}/api/v2/Todos/{{todoId}}/status
+Content-Type: application/json
+
+{
+  "isCompleted": true
+}
+
+### PATCH — снять отметку о выполнении
+PATCH .../status
+{ "isCompleted": false }
+
+### PATCH — несуществующий id (404)
+PATCH .../11111111-.../status
+{ "isCompleted": true }
+
 ### ========================
 ### DELETE
 ### ========================

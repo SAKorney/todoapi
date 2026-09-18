@@ -85,4 +85,20 @@ public class DbContextRepository(TodoContext context) : ITodoRepository
         await context.SaveChangesAsync(cancellationToken);
         return existing;
     }
+
+    public async Task<TodoItem?> UpdateStatusAsync(
+        Guid id,
+        bool isCompleted,
+        CancellationToken cancellationToken)
+    {
+        var existing = await context.Items.FindAsync([id], cancellationToken);
+        if (existing is null)
+        {
+            return null;
+        }
+
+        existing.IsCompleted = isCompleted;
+        await context.SaveChangesAsync(cancellationToken);
+        return existing;
+    }
 }

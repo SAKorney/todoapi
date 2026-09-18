@@ -13,3 +13,6 @@ public sealed record TodoResponseDto(
     string Title,
     bool IsCompleted,
     DateTime CreatedAt);
+
+public sealed record UpdateTodoStatusDto(
+    bool IsCompleted);

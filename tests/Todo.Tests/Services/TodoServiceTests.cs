@@ -72,7 +72,7 @@ public class TodoServiceTests
     {
         // Arrange
         var query = new TodoQueryParameters();
-        var pagedEntities = new PagedResult<TodoItem>([],TotalCount: 0, Page: 1, PageSize: 10);
+        var pagedEntities = new PagedResult<TodoItem>([], TotalCount: 0, Page: 1, PageSize: 10);
 
         _repositoryMock
             .Setup(r => r.GetPagedAsync(query, It.IsAny<CancellationToken>()))
@@ -352,6 +352,87 @@ public class TodoServiceTests
     }
 
     #endregion
+
+    #region SetCompletionStatusAsync
+
+    [Fact]
+    public async Task SetCompletionStatusAsync_MarkAsCompleted_ReturnsUpdatedDto()
+    {
+        // Arrange
+        var item = CreateTodoItem("Task");
+        item.IsCompleted = true;
+        var dto = new UpdateTodoStatusDto(IsCompleted: true);
+        var expectedDto = MapToDto(item);
+
+        _repositoryMock
+            .Setup(r => r.UpdateStatusAsync(item.Id, true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(item);
+
+        _mapperMock
+            .Setup(m => m.Map<TodoResponseDto>(item))
+            .Returns(expectedDto);
+
+        // Act
+        var result = await _sut.UpdateStatusAsync(item.Id, dto, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.IsCompleted.Should().BeTrue();
+        result.Should().BeEquivalentTo(expectedDto);
+        _repositoryMock.Verify(
+            r => r.UpdateStatusAsync(item.Id, true, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SetCompletionStatusAsync_MarkAsIncomplete_ReturnsUpdatedDto()
+    {
+        // Arrange
+        var item = CreateTodoItem("Done task", isCompleted: true);
+        item.IsCompleted = false;
+        var dto = new UpdateTodoStatusDto(IsCompleted: false);
+        var expectedDto = MapToDto(item);
+
+        _repositoryMock
+            .Setup(r => r.UpdateStatusAsync(item.Id, false, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(item);
+
+        _mapperMock
+            .Setup(m => m.Map<TodoResponseDto>(item))
+            .Returns(expectedDto);
+
+        // Act
+        var result = await _sut.UpdateStatusAsync(item.Id, dto, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result!.IsCompleted.Should().BeFalse();
+        _repositoryMock.Verify(
+            r => r.UpdateStatusAsync(item.Id, false, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task SetCompletionStatusAsync_WhenItemNotFound_ReturnsNull()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var dto = new UpdateTodoStatusDto(IsCompleted: true);
+
+        _repositoryMock
+            .Setup(r => r.UpdateStatusAsync(id, true, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((TodoItem?)null);
+
+        // Act
+        var result = await _sut.UpdateStatusAsync(id, dto, CancellationToken.None);
+
+        // Assert
+        result.Should().BeNull();
+        _mapperMock.Verify(m => m.Map<TodoResponseDto>(It.IsAny<TodoItem>()), Times.Never);
+    }
+
+    #endregion
+
 
     #region DeleteAsync
 

@@ -50,6 +50,19 @@ public class TodoService(ITodoRepository repository, IMapper mapper, TimeProvide
         return mapper.Map<TodoResponseDto>(todo);
     }
 
+    public async Task<TodoResponseDto?> UpdateStatusAsync(
+        Guid id,
+        UpdateTodoStatusDto item,
+        CancellationToken cancellationToken)
+    {
+        var todo = await repository.UpdateStatusAsync(id, item.IsCompleted, cancellationToken);
+        if (todo is null)
+        {
+            return null;
+        }
+        return mapper.Map<TodoResponseDto>(todo);
+    }
+
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken)
     {
         return await repository.DeleteAsync(id, cancellationToken);

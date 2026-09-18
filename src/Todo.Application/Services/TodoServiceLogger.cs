@@ -26,7 +26,7 @@ public class TodoServiceLogger(ITodoService todoService, ILogger<TodoServiceLogg
             throw;
         }
     }
-    
+
     public async Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken)
     {
         logger.LogInformation("Creating a new todo item: {@Item}", item);
@@ -101,6 +101,36 @@ public class TodoServiceLogger(ITodoService todoService, ILogger<TodoServiceLogg
         catch (Exception ex)
         {
             logger.LogError(ex, "Error occurred while fetching todo item with ID: {Id}", id);
+            throw;
+        }
+    }
+
+ public async Task<TodoResponseDto?> UpdateStatusAsync(
+        Guid id,
+        UpdateTodoStatusDto item,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation(
+            "Setting completion status for todo ID: {Id} to {IsCompleted}",
+            id, item.IsCompleted);
+        try
+        {
+            var result = await todoService.UpdateStatusAsync(id, item, cancellationToken);
+            if (result is null)
+            {
+                logger.LogWarning("Todo item with ID: {Id} not found for status update", id);
+            }
+            else
+            {
+                logger.LogInformation(
+                    "Todo item with ID: {Id} completion status set to {IsCompleted}",
+                    id, result.IsCompleted);
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error occurred while setting completion status for todo ID: {Id}", id);
             throw;
         }
     }
