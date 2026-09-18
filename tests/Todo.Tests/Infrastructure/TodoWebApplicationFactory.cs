@@ -10,11 +10,6 @@ using Todo.Infrastructure.Repositories;
 
 namespace Todo.Tests.Infrastructure;
 
-/// <summary>
-/// WebApplicationFactory с SQLite in-memory.
-/// Connection держится открытым на всё время жизни фабрики —
-/// иначе :memory: БД уничтожается при закрытии connection.
-/// </summary>
 public class TodoWebApplicationFactory : WebApplicationFactory<Program>
 {
     private readonly SqliteConnection _connection = new("Data Source=:memory:");
@@ -34,6 +29,14 @@ public class TodoWebApplicationFactory : WebApplicationFactory<Program>
 
             services.AddDbContext<TodoContext>(options =>
                 options.UseSqlite(_connection));
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
+            context.Database.Migrate();
         });
     }
 

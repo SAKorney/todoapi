@@ -35,7 +35,8 @@ builder.Services.AddControllers(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<TodoContext>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddDbContext<TodoContext>(opt => 
+    opt.UseSqlite(builder.Configuration.GetConnectionString("TodoDb")));
 
 var app = builder.Build();
 
@@ -54,7 +55,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
-    await context.Database.EnsureCreatedAsync();
+    await context.Database.MigrateAsync();
+
     if (!await context.Items.AnyAsync())
     {
         var now = DateTime.UtcNow;
