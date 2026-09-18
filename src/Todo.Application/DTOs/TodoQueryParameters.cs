@@ -9,15 +9,6 @@ public sealed record TodoQueryParameters(
     string SortDir = "desc")
 {
     private const int MaxPageSize = 100;
-
-    public int NormalizedPage => Page < 1 ? 1 : Page;
-
-    public int NormalizedPageSize => PageSize switch
-    {
-        < 1 => 10,
-        > MaxPageSize => MaxPageSize,
-        _ => PageSize
-    };
 }
 
 public sealed record PagedResult<T>(

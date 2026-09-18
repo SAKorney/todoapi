@@ -34,8 +34,8 @@ public class DbContextRepository(TodoContext context) : ITodoRepository
             _ => q.OrderByDescending(x => x.CreatedAt)
         };
 
-        var page = query.NormalizedPage;
-        var pageSize = query.NormalizedPageSize;
+        var page = query.Page;
+        var pageSize = query.PageSize;
         var items = await q
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
