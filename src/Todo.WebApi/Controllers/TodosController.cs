@@ -9,6 +9,25 @@ namespace Todo.WebApi.Controllers;
 public class TodosController(ITodoService service) : ControllerBase
 {
     [HttpGet]
+    public async Task<ActionResult<PagedResult<TodoResponseDto>>> GetAllAsync(
+        [FromQuery] TodoQueryParameters query,
+        CancellationToken cancellationToken)
+    {
+        if (query.Page < 1)
+        {
+            return BadRequest("Page must be >= 1");
+        }
+
+        if (query.PageSize < 1)
+        {
+            return BadRequest("PageSize must be >= 1");
+        }
+
+        var result = await service.GetPagedAsync(query, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAllAsync(CancellationToken cancellationToken)
     {
         var response = await service.GetAllAsync(cancellationToken);

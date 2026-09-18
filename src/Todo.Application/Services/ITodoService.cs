@@ -4,6 +4,9 @@ namespace Todo.Application.Services;
 
 public interface ITodoService
 {
+    Task<PagedResult<TodoResponseDto>> GetPagedAsync(TodoQueryParameters query, CancellationToken cancellationToken);
+    
+    [Obsolete($"Use {nameof(GetPagedAsync)}")]
     Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken);
     Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     Task<TodoResponseDto> CreateAsync(CreateTodoDto item, CancellationToken cancellationToken);

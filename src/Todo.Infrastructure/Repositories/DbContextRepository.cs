@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Todo.Application.DTOs;
 using Todo.Application.Repositories;
 using Todo.Domain;
 
@@ -6,6 +7,42 @@ namespace Todo.Infrastructure.Repositories;
 
 public class DbContextRepository(TodoContext context) : ITodoRepository
 {
+    public async Task<PagedResult<TodoItem>> GetPagedAsync(
+        TodoQueryParameters query,
+        CancellationToken cancellationToken)
+    {
+        var q = context.Items.AsNoTracking().AsQueryable();
+
+        if (query.IsCompleted is not null)
+            q = q.Where(x => x.IsCompleted == query.IsCompleted);
+
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var term = query.Search.Trim();
+            q = q.Where(x => x.Title.Contains(term));
+        }
+
+        var totalCount = await q.CountAsync(cancellationToken);
+
+        q = (query.SortBy.ToLowerInvariant(), query.SortDir.ToLowerInvariant()) switch
+        {
+            ("title", "asc") => q.OrderBy(x => x.Title),
+            ("title", _) => q.OrderByDescending(x => x.Title),
+            ("iscompleted", "asc") => q.OrderBy(x => x.IsCompleted),
+            ("iscompleted", _) => q.OrderByDescending(x => x.IsCompleted),
+            ("createdat", "asc") => q.OrderBy(x => x.CreatedAt),
+            _ => q.OrderByDescending(x => x.CreatedAt)
+        };
+
+        var items = await q
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        return new PagedResult<TodoItem>(items, totalCount, query.Page, query.PageSize);
+    }
+
     public async Task AddAsync(TodoItem item, CancellationToken cancellationToken)
     {
         await context.Items.AddAsync(item, cancellationToken);

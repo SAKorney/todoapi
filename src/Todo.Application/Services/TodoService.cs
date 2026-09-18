@@ -7,6 +7,15 @@ namespace Todo.Application.Services;
 
 public class TodoService(ITodoRepository repository, IMapper mapper, TimeProvider timeProvider) : ITodoService
 {
+    public async Task<PagedResult<TodoResponseDto>> GetPagedAsync(
+        TodoQueryParameters query,
+        CancellationToken cancellationToken)
+    {
+        var paged = await repository.GetPagedAsync(query, cancellationToken);
+        var todos = paged.Items.Select(mapper.Map<TodoResponseDto>).ToList();
+        return new PagedResult<TodoResponseDto>(todos, paged.TotalCount, paged.Page, paged.PageSize);
+    }
+
     public async Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken)
     {
         var todos = await repository.GetAllAsync(cancellationToken);
