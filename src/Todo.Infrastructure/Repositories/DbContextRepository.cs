@@ -58,13 +58,6 @@ public class DbContextRepository(TodoContext context) : ITodoRepository
         return affected > 0;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await context.Items
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<TodoItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await context.Items

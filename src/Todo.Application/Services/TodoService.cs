@@ -16,12 +16,6 @@ public class TodoService(ITodoRepository repository, IMapper mapper, TimeProvide
         return new PagedResult<TodoResponseDto>(todos, paged.TotalCount, paged.Page, paged.PageSize);
     }
 
-    public async Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        var todos = await repository.GetAllAsync(cancellationToken);
-        return todos.Select(mapper.Map<TodoResponseDto>);
-    }
-
     public async Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var todo = await repository.GetByIdAsync(id, cancellationToken);

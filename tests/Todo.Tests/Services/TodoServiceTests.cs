@@ -164,57 +164,6 @@ public class TodoServiceTests
 
     #endregion
 
-    #region GetAllAsync
-
-    [Fact]
-    public async Task GetAllAsync_WhenItemsExist_ReturnsMappedDtos()
-    {
-        // Arrange
-        var items = new List<TodoItem>
-        {
-            CreateTodoItem("Task 1"),
-            CreateTodoItem("Task 2", isCompleted: true)
-        };
-
-        var expectedDtos = items.Select(MapToDto).ToList();
-
-        _repositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(items);
-
-        foreach (var item in items)
-        {
-            _mapperMock
-                .Setup(m => m.Map<TodoResponseDto>(item))
-                .Returns(MapToDto(item));
-        }
-
-        // Act
-        var result = await _sut.GetAllAsync(CancellationToken.None);
-
-        // Assert
-        result.Should().HaveCount(2);
-        result.Should().BeEquivalentTo(expectedDtos);
-        _repositoryMock.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task GetAllAsync_WhenEmpty_ReturnsEmptyCollection()
-    {
-        // Arrange
-        _repositoryMock
-            .Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Empty<TodoItem>());
-
-        // Act
-        var result = await _sut.GetAllAsync(CancellationToken.None);
-
-        // Assert
-        result.Should().BeEmpty();
-    }
-
-    #endregion
-
     #region GetByIdAsync
 
     [Fact]

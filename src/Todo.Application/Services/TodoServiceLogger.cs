@@ -66,22 +66,6 @@ public class TodoServiceLogger(ITodoService todoService, ILogger<TodoServiceLogg
         }
     }
 
-    public async Task<IEnumerable<TodoResponseDto>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        logger.LogInformation("Fetching all todo items");
-        try
-        {
-            var items = await todoService.GetAllAsync(cancellationToken);
-            logger.LogInformation("Successfully fetched todo items");
-            return items;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error occurred while fetching all todo items");
-            throw;
-        }
-    }
-
     public async Task<TodoResponseDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         logger.LogInformation("Fetching todo item with ID: {Id}", id);
