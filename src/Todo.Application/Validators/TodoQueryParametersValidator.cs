@@ -6,6 +6,8 @@ namespace Todo.Application.Validators;
 public class TodoQueryParametersValidator : TodoValidator<TodoQueryParameters>
 {
     private static readonly int _minCount = 1;
+    
+    private static readonly int _maxCount = 100;
     public TodoQueryParametersValidator()
     {
         RuleFor(x => x.Page)
@@ -13,7 +15,7 @@ public class TodoQueryParametersValidator : TodoValidator<TodoQueryParameters>
             .WithMessage($"Page must be >= {_minCount}");
 
         RuleFor(x => x.PageSize)
-            .GreaterThanOrEqualTo(_minCount)
-            .WithMessage($"PageSize must be >= {_minCount}");
+            .InclusiveBetween(_minCount, _maxCount)
+            .WithMessage($"PageSize must be between {_minCount} asn {_maxCount}");
     }
 }
