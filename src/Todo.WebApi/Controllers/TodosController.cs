@@ -27,13 +27,6 @@ public class TodosController(ITodoService service) : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<TodoResponseDto>>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        var response = await service.GetAllAsync(cancellationToken);
-        return Ok(response);
-    }
-
     [HttpGet("{id}")]
     [ActionName(nameof(GetByIdAsync))] // Начиная с версии 3.0 среда выполнения по умолчанию удаляет суффикс Async из имен экшенов при генерации маршрутов
     public async Task<ActionResult<TodoResponseDto>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
