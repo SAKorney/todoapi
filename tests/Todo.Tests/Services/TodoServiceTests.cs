@@ -25,6 +25,145 @@ public class TodoServiceTests
         _sut = new TodoService(_repositoryMock.Object, _mapperMock.Object, _timeProvider);
     }
 
+    #region GetPagedAsync
+
+    [Fact]
+    public async Task GetPagedAsync_WhenItemsExist_ReturnsMappedPagedResult()
+    {
+        // Arrange
+        var query = new TodoQueryParameters(Page: 1, PageSize: 10);
+        var items = new List<TodoItem>
+        {
+            CreateTodoItem("Task 1"),
+            CreateTodoItem("Task 2", isCompleted: true)
+        };
+
+        var pagedEntities = new PagedResult<TodoItem>(items, TotalCount: 2, Page: 1, PageSize: 10);
+
+        _repositoryMock
+            .Setup(r => r.GetPagedAsync(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pagedEntities);
+
+        foreach (var item in items)
+        {
+            _mapperMock
+                .Setup(m => m.Map<TodoResponseDto>(item))
+                .Returns(MapToDto(item));
+        }
+
+        // Act
+        var result = await _sut.GetPagedAsync(query, CancellationToken.None);
+
+        // Assert
+        result.Items.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.Page.Should().Be(1);
+        result.PageSize.Should().Be(10);
+        result.TotalPages.Should().Be(1);
+        result.HasNextPage.Should().BeFalse();
+        result.HasPreviousPage.Should().BeFalse();
+        result.Items.Should().BeEquivalentTo(items.Select(MapToDto));
+
+        _repositoryMock.Verify(r => r.GetPagedAsync(query, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetPagedAsync_WhenEmpty_ReturnsEmptyPagedResult()
+    {
+        // Arrange
+        var query = new TodoQueryParameters();
+        var pagedEntities = new PagedResult<TodoItem>([],TotalCount: 0, Page: 1, PageSize: 10);
+
+        _repositoryMock
+            .Setup(r => r.GetPagedAsync(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pagedEntities);
+
+        // Act
+        var result = await _sut.GetPagedAsync(query, CancellationToken.None);
+
+        // Assert
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
+        result.HasNextPage.Should().BeFalse();
+        result.HasPreviousPage.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task GetPagedAsync_WhenMultiplePages_ExposesPagingMetadata()
+    {
+        // Arrange
+        var query = new TodoQueryParameters(Page: 2, PageSize: 5);
+        var items = new List<TodoItem>
+        {
+            CreateTodoItem("Task 6"),
+            CreateTodoItem("Task 7")
+        };
+
+        // totalCount=12, pageSize=5 → 3 pages; page 2 has next and previous
+        var pagedEntities = new PagedResult<TodoItem>(items, TotalCount: 12, Page: 2, PageSize: 5);
+
+        _repositoryMock
+            .Setup(r => r.GetPagedAsync(query, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pagedEntities);
+
+        foreach (var item in items)
+        {
+            _mapperMock
+                .Setup(m => m.Map<TodoResponseDto>(item))
+                .Returns(MapToDto(item));
+        }
+
+        // Act
+        var result = await _sut.GetPagedAsync(query, CancellationToken.None);
+
+        // Assert
+        result.Items.Should().HaveCount(2);
+        result.TotalCount.Should().Be(12);
+        result.Page.Should().Be(2);
+        result.PageSize.Should().Be(5);
+        result.TotalPages.Should().Be(3);
+        result.HasNextPage.Should().BeTrue();
+        result.HasPreviousPage.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetPagedAsync_PassesQueryParametersToRepository()
+    {
+        // Arrange
+        var query = new TodoQueryParameters(
+            Page: 1,
+            PageSize: 20,
+            IsCompleted: false,
+            Search: "buy",
+            SortBy: "title",
+            SortDir: "asc");
+
+        var pagedEntities = new PagedResult<TodoItem>([], TotalCount: 0, Page: 1, PageSize: 20);
+
+        _repositoryMock
+            .Setup(r => r.GetPagedAsync(It.IsAny<TodoQueryParameters>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(pagedEntities);
+
+        // Act
+        await _sut.GetPagedAsync(query, CancellationToken.None);
+
+        // Assert
+        _repositoryMock.Verify(
+            r => r.GetPagedAsync(
+                It.Is<TodoQueryParameters>(q =>
+                    q.Page == 1 &&
+                    q.PageSize == 20 &&
+                    q.IsCompleted == false &&
+                    q.Search == "buy" &&
+                    q.SortBy == "title" &&
+                    q.SortDir == "asc"),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    #endregion
+
     #region GetAllAsync
 
     [Fact]
