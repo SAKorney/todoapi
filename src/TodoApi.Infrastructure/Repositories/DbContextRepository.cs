@@ -5,7 +5,6 @@ namespace TodoApi.Repositories;
 
 public class DbContextRepository(TodoContext context) : ITodoRepository
 {
-
     public async Task AddAsync(TodoItem item, CancellationToken cancellationToken)
     {
         await context.Items.AddAsync(item, cancellationToken);
