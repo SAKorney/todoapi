@@ -54,6 +54,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
+    await context.Database.EnsureCreatedAsync();
     if (!await context.Items.AnyAsync())
     {
         var now = DateTime.UtcNow;
@@ -67,3 +68,6 @@ using (var scope = app.Services.CreateScope())
 
 app.Logger.LogInformation("Application is starting, logging provider selected from configuration");
 app.Run();
+
+// Для интеграционных тестах (WebApplicationFactory)
+public partial class Program;
