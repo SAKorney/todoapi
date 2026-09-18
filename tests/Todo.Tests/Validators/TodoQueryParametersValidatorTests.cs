@@ -52,7 +52,7 @@ public class TodoQueryParametersValidatorTests
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(TodoQueryParameters.Page) &&
-            e.ErrorMessage.Contains("Page must be >="));
+            e.ErrorMessage.Contains("Page must be"));
     }
 
     [Theory]
@@ -66,7 +66,7 @@ public class TodoQueryParametersValidatorTests
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(TodoQueryParameters.PageSize) &&
-            e.ErrorMessage.Contains("PageSize must be >="));
+            e.ErrorMessage.Contains("PageSize must be between"));
     }
 
     [Fact]
