@@ -36,7 +36,6 @@ public class TodoWebApplicationFactory : WebApplicationFactory<Program>
             var provider = services.BuildServiceProvider();
             using var scope = provider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<TodoContext>();
-            context.Database.Migrate();
         });
     }
 
