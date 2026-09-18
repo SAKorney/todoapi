@@ -12,7 +12,7 @@ public class TodoItemConfiguration : IEntityTypeConfiguration<TodoItem>
 
         builder.Property(x => x.Title)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(TodoItemConstraints.TitleMaxLength);
 
         builder.Property(x => x.IsCompleted)
             .IsRequired();
