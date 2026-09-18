@@ -20,7 +20,7 @@ builder.Services.AddScoped<ITodoService, TodoService>()
     .Decorate<ITodoService, TodoServiceLogger>();
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(TodoService).Assembly);
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
