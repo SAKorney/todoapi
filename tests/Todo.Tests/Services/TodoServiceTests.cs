@@ -356,7 +356,7 @@ public class TodoServiceTests
     #region SetCompletionStatusAsync
 
     [Fact]
-    public async Task SetCompletionStatusAsync_MarkAsCompleted_ReturnsUpdatedDto()
+    public async Task UpdateStatusAsync_MarkAsCompleted_ReturnsUpdatedDto()
     {
         // Arrange
         var item = CreateTodoItem("Task");
@@ -385,7 +385,7 @@ public class TodoServiceTests
     }
 
     [Fact]
-    public async Task SetCompletionStatusAsync_MarkAsIncomplete_ReturnsUpdatedDto()
+    public async Task UpdateStatusAsync_MarkAsIncomplete_ReturnsUpdatedDto()
     {
         // Arrange
         var item = CreateTodoItem("Done task", isCompleted: true);
@@ -413,7 +413,7 @@ public class TodoServiceTests
     }
 
     [Fact]
-    public async Task SetCompletionStatusAsync_WhenItemNotFound_ReturnsNull()
+    public async Task UpdateStatusAsync_WhenItemNotFound_ReturnsNull()
     {
         // Arrange
         var id = Guid.NewGuid();
