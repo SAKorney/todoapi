@@ -13,7 +13,6 @@ public class GlobalExceptionHandler(
     {
         var (statusCode, title) = exception switch
         {
-            DbUpdateConcurrencyException => (StatusCodes.Status409Conflict, "Concurrency conflict"),
             DbUpdateException => (StatusCodes.Status500InternalServerError, "Database update failed"),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred")
         };
@@ -22,19 +21,25 @@ public class GlobalExceptionHandler(
 
         httpContext.Response.StatusCode = statusCode;
 
-        return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
-        {
-            HttpContext = httpContext,
-            Exception = exception,
-            ProblemDetails = new ProblemDetails
-            {
-                Status = statusCode,
-                Title = title,
-                Detail = httpContext.RequestServices
-                    .GetRequiredService<IHostEnvironment>().IsDevelopment()
-                        ? exception.Message
-                        : null
-            }
-        });
+        return await problemDetailsService.TryWriteAsync(ExtractProblemDetails(httpContext, exception, statusCode, title));
     }
+
+    private static ProblemDetailsContext ExtractProblemDetails(
+        HttpContext httpContext,
+        Exception exception,
+        int statusCode,
+        string title) => new()
+    {
+        HttpContext = httpContext,
+        Exception = exception,
+        ProblemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Detail = httpContext.RequestServices
+                            .GetRequiredService<IHostEnvironment>().IsDevelopment()
+                                ? exception.Message
+                                : null
+        }
+    };
 }
