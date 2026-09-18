@@ -22,14 +22,36 @@ public class ValidationFilter(IServiceProvider serviceProvider) : IAsyncActionFi
                 var validationContext = new ValidationContext<object>(argument);
                 var validationResult = await validator.ValidateAsync(validationContext);
 
-                if (!validationResult.IsValid)
+                if (validationResult.IsValid)
                 {
-                    context.Result = new BadRequestObjectResult(validationResult.Errors);
-                    return;
+                    continue;
                 }
+
+                ValidationProblemDetails problemDetails = ExtractProblemDetails(context, validationResult);
+
+                context.Result = new BadRequestObjectResult(problemDetails);
+                return;
             }
         }
 
         await next();
+    }
+
+    private static ValidationProblemDetails ExtractProblemDetails(ActionExecutingContext context, FluentValidation.Results.ValidationResult validationResult)
+    {
+        var errors = validationResult.Errors
+            .GroupBy(e => e.PropertyName)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(e => e.ErrorMessage).ToArray());
+
+        var problemDetails = new ValidationProblemDetails(errors)
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "One or more validation errors occurred.",
+            Instance = context.HttpContext.Request.Path
+        };
+
+        return problemDetails;
     }
 }
