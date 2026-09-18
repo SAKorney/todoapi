@@ -13,16 +13,6 @@ public class TodosController(ITodoService service) : ControllerBase
         [FromQuery] TodoQueryParameters query,
         CancellationToken cancellationToken)
     {
-        if (query.Page < 1)
-        {
-            return BadRequest("Page must be >= 1");
-        }
-
-        if (query.PageSize < 1)
-        {
-            return BadRequest("PageSize must be >= 1");
-        }
-
         var result = await service.GetPagedAsync(query, cancellationToken);
         return Ok(result);
     }
